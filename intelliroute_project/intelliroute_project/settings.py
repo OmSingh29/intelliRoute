@@ -23,10 +23,15 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 HF_API_TOKEN = os.environ.get('HF_API_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
+#DEBUG = False
 
-#ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['intelliroute.onrender.com', 'www.intelliroute.com', 'intelliroute.com']
+ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = ['intelliroute.onrender.com', 'www.intelliroute.com', 'intelliroute.com']
+
+#CORS_ALLOWED_ORIGINS = []
+#CORS_ALLOWED_ORIGINS = ["https://intelliroute.onrender.com", "http://127.0.0.1:8000", "http://localhost:8000"]
+
 
 # Application definition
 
@@ -38,11 +43,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'core',
-    "corsheaders",
+    #"corsheaders",
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    #"corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -53,9 +58,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "https://intelliroute.onrender.com",
-]
 
 ROOT_URLCONF = "intelliroute_project.urls"
 

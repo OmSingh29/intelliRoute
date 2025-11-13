@@ -171,19 +171,75 @@
 
             summaryOutput.textContent = data.summary || '';
             sentimentOutput.textContent = data.sentiment || '';
+            
+            // Create colored, soft-shadow chips for tags (matching example buttons UI)
             tagsOutput.innerHTML = '';
+
+            // human-friendly color hexes for clean gradients
+            const colorMap = {
+            "urgent":        {bg:'#FEE2E2', fill:'#EF4444'}, // red
+            "bug":           {bg:'#FFF7ED', fill:'#FB923C'}, // orange
+            "technical":     {bg:'#EFF6FF', fill:'#2563EB'}, // blue
+            "support":       {bg:'#EFF6FF', fill:'#2563EB'}, // blue
+            "feature":       {bg:'#EFF6FF', fill:'#3B82F6'}, // blue
+            "billing":       {bg:'#FFFBEB', fill:'#D97706'}, // yellow/orange
+            "praise":        {bg:'#ECFDF5', fill:'#10B981'}, // green
+            "general":       {bg:'#F3F4F6', fill:'#6B7280'}, // gray
+            };
+
             if (Array.isArray(data.tags)) {
-            data.tags.forEach(t => {
-                const el = document.createElement('span');
-                el.className = 'px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-sm';
-                el.textContent = t;
-                tagsOutput.appendChild(el);
+            // data.tags is a list of objects like {label:'Feature Request', score:0.07}
+            data.tags.forEach(obj => {
+                const rawLabel = (obj && obj.label) ? String(obj.label) : String(obj);
+                const score = (obj && typeof obj.score === 'number') ? obj.score : 0;
+                const pct = Math.round(score * 100); // e.g. 80
+
+                const key = rawLabel.toLowerCase();
+                // pick a color by keyword match (robust to small label variations)
+                let pick = colorMap["general"];
+                if (key.includes("urgent")) pick = colorMap["urgent"];
+                else if (key.includes("bug")) pick = colorMap["bug"];
+                else if (key.includes("technical") || key.includes("support")) pick = colorMap["technical"];
+                else if (key.includes("feature")) pick = colorMap["feature"];
+                else if (key.includes("billing")) pick = colorMap["billing"];
+                else if (key.includes("praise")) pick = colorMap["praise"];
+                else if (key.includes("general")) pick = colorMap["general"];
+
+                // Create the chip: left side filled according to pct, rest uses bg
+                const chip = document.createElement('span');
+                chip.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium';
+                chip.style.background = `linear-gradient(90deg, ${pick.fill} ${pct}%, ${pick.bg} ${pct}%)`;
+                chip.style.border = '1px solid rgba(0,0,0,0.06)';
+                chip.style.boxShadow = '0 1px 2px rgba(0,0,0,0.04)';
+
+                // Label text
+                const labelNode = document.createElement('span');
+                labelNode.textContent = rawLabel;
+                labelNode.style.paddingRight = '6px';
+                labelNode.style.color = '#111827'; // dark text for readability
+
+                // Small badge showing percentage
+                const percNode = document.createElement('span');
+                percNode.textContent = `${pct}%`;
+                percNode.style.fontSize = '0.7rem';
+                percNode.style.padding = '2px 6px';
+                percNode.style.borderRadius = '999px';
+                percNode.style.background = 'rgba(255,255,255,0.6)';
+                percNode.style.color = '#111827';
+                percNode.style.marginLeft = '4px';
+
+                chip.appendChild(labelNode);
+                chip.appendChild(percNode);
+                tagsOutput.appendChild(chip);
             });
             }
+
         }
 
         async function postAnalyze(text, attempts = 3) {
-            const url = 'https://intelliroute.onrender.com/api/analyze/'; // absolute prod URL
+
+            const url = '/api/analyze/';
+
             const payload = { text };
             for (let i = 1; i <= attempts; i++) {
             try {

@@ -106,12 +106,14 @@ def analyze_feedback(request):
             text_input,
             model=MODEL_SUMMARIZATION,
         )
+        print('Summary',summary)
 
         # 3. Call Sentiment Analysis
         sentiment = client.text_classification(
             text_input,
             model=MODEL_SENTIMENT,
         )
+        print('Sentiment',sentiment)
 
         # 4. Call Zero-Shot Classification (Manual Requests Call - as per user instruction)
         # Using model-specific URL as defined by the user
@@ -122,7 +124,6 @@ def analyze_feedback(request):
 
         def query(payload):
             response = requests.post(API_URL, headers=headers, json=payload)
-            response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
             return response.json()
 
         tags_payload = {
@@ -131,6 +132,7 @@ def analyze_feedback(request):
         }
         
         tags = query(tags_payload)
+        print('tags',tags)
 
         # --- PROCESS RESULTS ---
         
