@@ -26,7 +26,7 @@ HF_API_TOKEN = os.environ.get('HF_API_TOKEN')
 DEBUG = False
 
 #ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['www.intelliroute.com', 'intelliroute.com']
+ALLOWED_HOSTS = ['intelliroute.onrender.com', 'www.intelliroute.com,intelliroute.com']
 
 # Application definition
 
