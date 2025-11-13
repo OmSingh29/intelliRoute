@@ -13,8 +13,6 @@ serviceAccountKey.json
 
 # Django build / static outputs
 staticfiles/
-# If you prefer to commit built CSS for demo, remove the next line
-static/css/styles.css
 
 # Local DB
 db.sqlite3
