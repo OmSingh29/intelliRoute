@@ -23,11 +23,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 HF_API_TOKEN = os.environ.get('HF_API_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-#DEBUG = False
+#DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-#ALLOWED_HOSTS = ['intelliroute.onrender.com', 'www.intelliroute.com', 'intelliroute.com']
+#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['intelliroute.onrender.com', 'www.intelliroute.com', 'intelliroute.com']
 
 #CORS_ALLOWED_ORIGINS = []
 #CORS_ALLOWED_ORIGINS = ["https://intelliroute.onrender.com", "http://127.0.0.1:8000", "http://localhost:8000"]
