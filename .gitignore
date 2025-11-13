@@ -12,7 +12,6 @@ __pycache__/
 serviceAccountKey.json
 
 # Django build / static outputs
-staticfiles/
 
 # Local DB
 db.sqlite3
