@@ -131,8 +131,156 @@
 
     <!-- JS (unchanged) -->
     <script>
-        /* JS stays the same as your original */
+        (function () {
+        const analyzeButton = document.getElementById('analyzeButton');
+        const feedbackText = document.getElementById('feedbackText');
+        const buttonText = document.getElementById('button-text');
+        const buttonSpinner = document.getElementById('button-spinner');
+        const placeholder = document.getElementById('placeholder');
+        const reportCard = document.getElementById('reportCard');
+        const summaryOutput = document.getElementById('summaryOutput');
+        const sentimentOutput = document.getElementById('sentimentOutput');
+        const tagsOutput = document.getElementById('tagsOutput');
+        const errorCard = document.getElementById('errorCard');
+        const errorOutput = document.getElementById('errorOutput');
+
+        if (!analyzeButton) {
+            console.error('[analyze] analyzeButton not found in DOM — event listener not attached');
+            return;
+        }
+
+        function showSpinner() {
+            buttonText.style.display = 'none';
+            buttonSpinner.classList.remove('hidden');
+        }
+        function hideSpinner() {
+            buttonSpinner.classList.add('hidden');
+            buttonText.style.display = '';
+        }
+
+        function showError(msg) {
+            errorOutput.textContent = msg;
+            errorCard.classList.remove('hidden');
+            reportCard.classList.add('hidden');
+            placeholder.classList.add('hidden');
+        }
+        function showReport(data) {
+            errorCard.classList.add('hidden');
+            placeholder.classList.add('hidden');
+            reportCard.classList.remove('hidden');
+
+            summaryOutput.textContent = data.summary || '';
+            sentimentOutput.textContent = data.sentiment || '';
+            tagsOutput.innerHTML = '';
+            if (Array.isArray(data.tags)) {
+            data.tags.forEach(t => {
+                const el = document.createElement('span');
+                el.className = 'px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-sm';
+                el.textContent = t;
+                tagsOutput.appendChild(el);
+            });
+            }
+        }
+
+        async function postAnalyze(text, attempts = 3) {
+            const url = 'https://intelliroute.onrender.com/api/analyze/'; // absolute prod URL
+            const payload = { text };
+            for (let i = 1; i <= attempts; i++) {
+            try {
+                console.log(`[analyze] attempt ${i} -> POST ${url}`);
+                const res = await fetch(url, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+                });
+
+                console.log('[analyze] response status:', res.status);
+                console.log('[analyze] response headers:', {
+                'cf-ray': res.headers.get('cf-ray'),
+                'x-render-origin-server': res.headers.get('x-render-origin-server'),
+                'content-type': res.headers.get('content-type')
+                });
+
+                const txt = await res.text();
+                let json = null;
+                try { json = JSON.parse(txt); } catch(e) { /* not JSON */ }
+
+                if (res.ok) {
+                console.log('[analyze] OK result', json ?? txt);
+                return { ok: true, body: json ?? txt, raw: txt, status: res.status };
+                }
+
+                if (res.status >= 400 && res.status < 500) {
+                console.warn('[analyze] client error', res.status, txt);
+                return { ok: false, error: txt || `HTTP ${res.status}`, status: res.status };
+                }
+
+                console.warn('[analyze] server error', res.status, txt);
+                if (i < attempts) {
+                await new Promise(r => setTimeout(r, 300 * i));
+                continue;
+                }
+                return { ok: false, error: txt || `HTTP ${res.status}`, status: res.status };
+
+            } catch (err) {
+                console.error('[analyze] fetch threw', err);
+                if (i < attempts) {
+                await new Promise(r => setTimeout(r, 300 * i));
+                continue;
+                }
+                return { ok: false, error: String(err) };
+            }
+            }
+        }
+
+        analyzeButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('[analyze] button clicked');
+
+            const text = feedbackText.value || '';
+            if (!text.trim()) {
+            showError('Please enter some feedback text before analyzing.');
+            return;
+            }
+
+            errorCard.classList.add('hidden');
+            reportCard.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+
+            showSpinner();
+
+            const result = await postAnalyze(text, 3);
+
+            hideSpinner();
+
+            if (!result.ok) {
+            console.error('[analyze] failed result', result);
+            showError(result.error || `Request failed (status: ${result.status || 'unknown'}) — check console for details.`);
+            return;
+            }
+
+            const body = result.body;
+            if (typeof body === 'string') {
+            try {
+                const parsed = JSON.parse(body);
+                showReport(parsed);
+            } catch (e) {
+                showError('Server returned non-JSON response. Check console for details.');
+                console.log('[analyze] raw body:', body);
+            }
+            } else {
+            showReport(body);
+            }
+        });
+
+        console.log('[analyze] debug script loaded — event listener attached');
+        })();
     </script>
+
 
 </body>
 </html>
