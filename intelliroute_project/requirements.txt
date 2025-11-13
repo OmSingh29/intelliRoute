@@ -1,0 +1,8 @@
+django
+djangorestframework
+requests
+python-dotenv
+huggingface_hub
+firebase-admin
+google-auth
+google-auth-oauthlib

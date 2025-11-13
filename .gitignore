@@ -1,0 +1,29 @@
+#Virtual environment
+intelliroute/
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.log
+
+# Environment / secrets
+.env
+serviceAccountKey.json
+
+# Django build / static outputs
+staticfiles/
+# If you prefer to commit built CSS for demo, remove the next line
+static/css/styles.css
+
+# Local DB
+db.sqlite3
+
+# Node / Tailwind
+node_modules/
+tailwindcss.exe
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db

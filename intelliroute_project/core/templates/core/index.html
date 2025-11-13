@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliRoute</title>
+
+    {% load static %}
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        .icon { width: 1.5rem; height: 1.5rem; margin-right: 0.5rem; }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 w-full max-w-5xl">
+
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">IntelliRoute</h1>
+            <p class="text-lg text-gray-700 mt-2">Paste any customer feedback to get an instant AI analysis.</p>
+        </div>
+
+        <!-- Layout Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+
+            <!-- INPUT SECTION -->
+            <div class="space-y-6">
+
+                <!-- Feedback Textarea -->
+                <div>
+                    <label for="feedbackText" class="block text-sm font-medium text-gray-800 mb-2">Customer Feedback</label>
+                    <textarea id="feedbackText" rows="12"
+                        class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all text-gray-900"
+                        placeholder="Paste your text here..."></textarea>
+                </div>
+
+                <!-- Example Buttons -->
+                <div>
+                    <p class="text-sm font-medium text-gray-800 mb-3">Or try an example:</p>
+                    <div class="flex flex-wrap gap-2">
+
+                        <button class="example-btn bg-red-100 text-red-800 hover:bg-red-200 py-1 px-3 rounded-full text-sm font-medium transition-all"
+                            data-text="The app is crashing every time I try to open the payments page!! I'm trying to pay my bill and it just won't load. This is ridiculous and I'm getting an error code 500. I am so frustrated!!">
+                            Bug Report (Negative)
+                        </button>
+
+                        <button class="example-btn bg-green-100 text-green-800 hover:bg-green-200 py-1 px-3 rounded-full text-sm font-medium transition-all"
+                            data-text="I just want to say your support team, especially Sarah, was amazing. My issue was complicated but she was so patient and fixed it for me. I really love this product, it's a lifesaver!">
+                            Praise (Positive)
+                        </button>
+
+                        <button class="example-btn bg-blue-100 text-blue-800 hover:bg-blue-200 py-1 px-3 rounded-full text-sm font-medium transition-all"
+                            data-text="The app is decent, but it would be really great if you could add a feature to export the reports to PDF. I have to do this manually right now and it's a bit annoying. Just an idea.">
+                            Feature Request (Neutral)
+                        </button>
+
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <button id="analyzeButton"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+                    <span id="button-text">Analyze Feedback</span>
+                    <span id="button-spinner"
+                        class="hidden animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mx-auto">
+                    </span>
+                </button>
+            </div>
+
+            <!-- OUTPUT SECTION -->
+            <div id="outputArea" class="space-y-6">
+
+                <!-- Placeholder -->
+                <div id="placeholder"
+                    class="h-full flex flex-col items-center justify-center text-center bg-gray-50 border border-gray-300 rounded-lg p-6">
+                    <svg class="w-16 h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 21v-1m0-8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z">
+                        </path>
+                    </svg>
+                    <h3 class="mt-4 text-lg font-medium text-gray-700">Your analysis report will appear here</h3>
+                    <p class="text-sm text-gray-500 mt-1">Enter some feedback and click "Analyze".</p>
+                </div>
+
+                <!-- Analysis Report -->
+                <div id="reportCard" class="hidden bg-gray-50 border border-gray-300 rounded-lg p-6 space-y-6 h-full">
+                    <h2 class="text-2xl font-bold text-gray-900 border-b pb-3">Analysis Report</h2>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Summary</h3>
+                        <p id="summaryOutput"
+                            class="text-gray-800 italic bg-white p-3 rounded-md border border-gray-300"></p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Sentiment</h3>
+                        <div id="sentimentOutput"
+                            class="flex items-center p-3 rounded-md font-medium text-base"></div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Suggested Routing Tags</h3>
+                        <div id="tagsOutput" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Error Card -->
+                <div id="errorCard" class="hidden bg-red-100 border border-red-300 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-red-800 mb-2">Analysis Failed</h3>
+                    <p id="errorOutput" class="text-red-700"></p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JS (unchanged) -->
+    <script>
+        /* JS stays the same as your original */
+    </script>
+
+</body>
+</html>
