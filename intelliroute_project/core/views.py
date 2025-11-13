@@ -106,22 +106,9 @@ def analyze_feedback(request):
             text_input,
             model=MODEL_SUMMARIZATION,
         )
-        print('Summary',summary)
-        '''
-        # 3. Call Sentiment Analysis
-        sentiment = client.text_classification(
-            text_input,
-            model=MODEL_SENTIMENT,
-        )
-        '''
-        API_SENTIMENT = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
+        print('Summary', summary)
 
-        headers = {"Authorization": f"Bearer {settings.HF_API_TOKEN}"}
-        payload = {"inputs": text_input}
-
-        sentiment = requests.post(API_SENTIMENT, headers=headers, json=payload, timeout=10).json()
-
-        print('Sentiment',sentiment)
+        # --- Sentiment calls removed ---
 
         # 4. Call Zero-Shot Classification (Manual Requests Call - as per user instruction)
         # Using model-specific URL as defined by the user
@@ -140,7 +127,7 @@ def analyze_feedback(request):
         }
         
         tags = query(tags_payload)
-        print('tags',tags)
+        print('tags', tags)
 
         # --- PROCESS RESULTS ---
         
@@ -149,15 +136,11 @@ def analyze_feedback(request):
         if summary and hasattr(summary, 'summary_text'):
             processed_summary = summary.summary_text
 
-        # 'sentiment' is a LIST of TextClassificationOutputElement OBJECTS.
-        processed_sentiment = "Neutral"
-        if sentiment and isinstance(sentiment, list) and len(sentiment) > 0:
-            top = max(sentiment, key=lambda x: x.score)
-            processed_sentiment = top.label.title()
+        # --- Sentiment processing removed ---
         
         # 'tags' is a LIST of DICTIONARIES (from the requests call)
-        processed_tag = "General Feedback" # Default to lowest priority tag
-        processed_rank = 100 # Default rank
+        processed_tag = "General Feedback"  # Default to lowest priority tag
+        processed_rank = 100  # Default rank
         
         # Logic: Select tag based on MODEL CONFIDENCE (highest score)
         if tags and isinstance(tags, list) and len(tags) > 0 and isinstance(tags[0], dict):
@@ -172,14 +155,13 @@ def analyze_feedback(request):
                 # Calculate priority rank of the SELECTED tag for dashboard sorting
                 processed_rank = PRIORITY_MAP.get(processed_tag, 100)
 
-        # Final response structure
+        # Final response structure (sentiment removed)
         response_data = {
             'summary': processed_summary,
-            'sentiment': processed_sentiment,
             # Store the single, highest-scoring tag
-            'tags': [processed_tag], 
+            'tags': [processed_tag],
             # Store the priority rank for dashboard sorting
-            'priority_rank': processed_rank, 
+            'priority_rank': processed_rank,
             'timestamp': firestore.SERVER_TIMESTAMP
         }
 
@@ -193,7 +175,7 @@ def analyze_feedback(request):
             if db:
                 # Add the original response_data (with the SERVER_TIMESTAMP) to Firestore
                 tickets_ref = db.collection('user_tickets').document(demo_user_id).collection('tickets')
-                tickets_ref.add(response_data) 
+                tickets_ref.add(response_data)
             else:
                 print("Firestore (db) is not initialized. Skipping save.")
         except Exception as e:

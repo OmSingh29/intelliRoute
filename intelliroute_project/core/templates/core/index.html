@@ -106,11 +106,7 @@
                             class="text-gray-800 italic bg-white p-3 rounded-md border border-gray-300"></p>
                     </div>
 
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Sentiment</h3>
-                        <div id="sentimentOutput"
-                            class="flex items-center p-3 rounded-md font-medium text-base"></div>
-                    </div>
+                    <!-- SENTIMENT BLOCK REMOVED -->
 
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800 mb-2">Suggested Routing Tags</h3>
@@ -129,7 +125,7 @@
         </div>
     </div>
 
-    <!-- JS (unchanged) -->
+    <!-- JS (unchanged except sentiment removed) -->
     <script>
         (function () {
         const analyzeButton = document.getElementById('analyzeButton');
@@ -139,7 +135,10 @@
         const placeholder = document.getElementById('placeholder');
         const reportCard = document.getElementById('reportCard');
         const summaryOutput = document.getElementById('summaryOutput');
-        const sentimentOutput = document.getElementById('sentimentOutput');
+
+        /* SENTIMENT REMOVED */
+        // const sentimentOutput = document.getElementById('sentimentOutput');
+
         const tagsOutput = document.getElementById('tagsOutput');
         const errorCard = document.getElementById('errorCard');
         const errorOutput = document.getElementById('errorOutput');
@@ -164,158 +163,114 @@
             reportCard.classList.add('hidden');
             placeholder.classList.add('hidden');
         }
+
         function showReport(data) {
             errorCard.classList.add('hidden');
             placeholder.classList.add('hidden');
             reportCard.classList.remove('hidden');
 
             summaryOutput.textContent = data.summary || '';
-            sentimentOutput.textContent = data.sentiment || '';
 
-            // Create colored, soft-shadow chips for tags (matching example buttons UI)
+            /* REMOVED: sentimentOutput.textContent = data.sentiment */
+
             tagsOutput.innerHTML = '';
 
-            // human-friendly color hexes for clean gradients / backgrounds
             const colorMap = {
-            "urgent":  {bg:'#FEE2E2', fill:'#EF4444'}, // red
-            "bug":     {bg:'#FFF7ED', fill:'#FB923C'}, // orange
-            "technical": {bg:'#EFF6FF', fill:'#2563EB'}, // blue
-            "support": {bg:'#EFF6FF', fill:'#2563EB'}, // blue
-            "feature": {bg:'#EFF6FF', fill:'#3B82F6'}, // blue
-            "billing": {bg:'#FFFBEB', fill:'#D97706'}, // yellow/orange
-            "praise":  {bg:'#ECFDF5', fill:'#10B981'}, // green
-            "general": {bg:'#F3F4F6', fill:'#6B7280'}  // gray
+                "urgent":  {bg:'#FEE2E2', fill:'#EF4444'},
+                "bug":     {bg:'#FFF7ED', fill:'#FB923C'},
+                "technical": {bg:'#EFF6FF', fill:'#2563EB'},
+                "support": {bg:'#EFF6FF', fill:'#2563EB'},
+                "feature": {bg:'#EFF6FF', fill:'#3B82F6'},
+                "billing": {bg:'#FFFBEB', fill:'#D97706'},
+                "praise":  {bg:'#ECFDF5', fill:'#10B981'},
+                "general": {bg:'#F3F4F6', fill:'#6B7280'}
             };
 
             if (Array.isArray(data.tags)) {
-            data.tags.forEach(obj => {
-                // support two formats:
-                //  - obj is a string: "Bug Report"
-                //  - obj is an object: { label: "Bug Report", score: 0.8 }
-                const rawLabel = (obj && obj.label) ? String(obj.label) : String(obj);
-                const score = (obj && typeof obj.score === 'number') ? obj.score : null; // null means "no score"
-                const pct = (typeof score === 'number' && !isNaN(score)) ? Math.round(score * 100) : null;
+                data.tags.forEach(obj => {
 
-                const key = rawLabel.toLowerCase();
-                // pick a color by keyword match (robust to small label variations)
-                let pick = colorMap["general"];
-                if (key.includes("urgent")) pick = colorMap["urgent"];
-                else if (key.includes("bug")) pick = colorMap["bug"];
-                else if (key.includes("technical") || key.includes("support")) pick = colorMap["technical"];
-                else if (key.includes("feature")) pick = colorMap["feature"];
-                else if (key.includes("billing")) pick = colorMap["billing"];
-                else if (key.includes("praise")) pick = colorMap["praise"];
-                else if (key.includes("general")) pick = colorMap["general"];
+                    const rawLabel = (obj && obj.label) ? String(obj.label) : String(obj);
 
-                // Create chip element
-                const chip = document.createElement('span');
-                chip.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium';
-                chip.style.border = '1px solid rgba(0,0,0,0.06)';
-                chip.style.boxShadow = '0 1px 2px rgba(0,0,0,0.04)';
+                    const key = rawLabel.toLowerCase();
+                    let pick = colorMap["general"];
 
-                // If we have a meaningful percentage (>0) show a left-fill gradient + percent badge
-                if (pct !== null && pct > 0) {
-                // gradient shows fill color for pct% then bg color
-                chip.style.background = `linear-gradient(90deg, ${pick.fill} ${pct}%, ${pick.bg} ${pct}%)`;
-                // dark text works on these light backgrounds
-                chip.style.color = '#111827';
-                } else {
-                // no score -> show a solid soft background color
-                chip.style.background = pick.bg;
-                chip.style.color = '#111827';
-                }
+                    if (key.includes("urgent")) pick = colorMap["urgent"];
+                    else if (key.includes("bug")) pick = colorMap["bug"];
+                    else if (key.includes("technical") || key.includes("support")) pick = colorMap["technical"];
+                    else if (key.includes("feature")) pick = colorMap["feature"];
+                    else if (key.includes("billing")) pick = colorMap["billing"];
+                    else if (key.includes("praise")) pick = colorMap["praise"];
 
-                // Label text
-                const labelNode = document.createElement('span');
-                labelNode.textContent = rawLabel;
-                labelNode.style.paddingRight = '6px';
-                labelNode.style.color = '#111827';
+                    const chip = document.createElement('span');
+                    chip.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium';
+                    chip.style.border = '1px solid rgba(0,0,0,0.06)';
+                    chip.style.boxShadow = '0 1px 2px rgba(0,0,0,0.04)';
+                    chip.style.background = pick.bg;
+                    chip.style.color = '#111827';
 
-                chip.appendChild(labelNode);
+                    const labelNode = document.createElement('span');
+                    labelNode.textContent = rawLabel;
 
-                // Only append percentage badge when pct is defined and > 0
-                if (pct !== null && pct > 0) {
-                const percNode = document.createElement('span');
-                percNode.textContent = `${pct}%`;
-                percNode.style.fontSize = '0.7rem';
-                percNode.style.padding = '2px 6px';
-                percNode.style.borderRadius = '999px';
-                percNode.style.background = 'rgba(255,255,255,0.7)';
-                percNode.style.color = '#111827';
-                percNode.style.marginLeft = '4px';
-                chip.appendChild(percNode);
-                }
-
-                tagsOutput.appendChild(chip);
-            });
+                    chip.appendChild(labelNode);
+                    tagsOutput.appendChild(chip);
+                });
             }
         }
 
         async function postAnalyze(text, attempts = 3) {
 
             const url = 'https://intelliroute.onrender.com/api/analyze/';
-
             const payload = { text };
+
             for (let i = 1; i <= attempts; i++) {
-            try {
-                console.log(`[analyze] attempt ${i} -> POST ${url}`);
-                const res = await fetch(url, {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-                });
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
 
-                console.log('[analyze] response status:', res.status);
-                console.log('[analyze] response headers:', {
-                'cf-ray': res.headers.get('cf-ray'),
-                'x-render-origin-server': res.headers.get('x-render-origin-server'),
-                'content-type': res.headers.get('content-type')
-                });
+                    const txt = await res.text();
+                    let json = null;
 
-                const txt = await res.text();
-                let json = null;
-                try { json = JSON.parse(txt); } catch(e) { /* not JSON */ }
+                    try { json = JSON.parse(txt); } catch(e) {}
 
-                if (res.ok) {
-                console.log('[analyze] OK result', json ?? txt);
-                return { ok: true, body: json ?? txt, raw: txt, status: res.status };
+                    if (res.ok) {
+                        return { ok: true, body: json ?? txt, raw: txt, status: res.status };
+                    }
+
+                    if (res.status >= 400 && res.status < 500) {
+                        return { ok: false, error: txt || `HTTP ${res.status}`, status: res.status };
+                    }
+
+                    if (i < attempts) {
+                        await new Promise(r => setTimeout(r, 300 * i));
+                        continue;
+                    }
+
+                    return { ok: false, error: txt || `HTTP ${res.status}`, status: res.status };
+
+                } catch (err) {
+                    if (i < attempts) {
+                        await new Promise(r => setTimeout(r, 300 * i));
+                        continue;
+                    }
+                    return { ok: false, error: String(err) };
                 }
-
-                if (res.status >= 400 && res.status < 500) {
-                console.warn('[analyze] client error', res.status, txt);
-                return { ok: false, error: txt || `HTTP ${res.status}`, status: res.status };
-                }
-
-                console.warn('[analyze] server error', res.status, txt);
-                if (i < attempts) {
-                await new Promise(r => setTimeout(r, 300 * i));
-                continue;
-                }
-                return { ok: false, error: txt || `HTTP ${res.status}`, status: res.status };
-
-            } catch (err) {
-                console.error('[analyze] fetch threw', err);
-                if (i < attempts) {
-                await new Promise(r => setTimeout(r, 300 * i));
-                continue;
-                }
-                return { ok: false, error: String(err) };
-            }
             }
         }
 
         analyzeButton.addEventListener('click', async (e) => {
             e.preventDefault();
-            console.log('[analyze] button clicked');
 
             const text = feedbackText.value || '';
             if (!text.trim()) {
-            showError('Please enter some feedback text before analyzing.');
-            return;
+                showError('Please enter some feedback text before analyzing.');
+                return;
             }
 
             errorCard.classList.add('hidden');
@@ -329,30 +284,25 @@
             hideSpinner();
 
             if (!result.ok) {
-            console.error('[analyze] failed result', result);
-            showError(result.error || `Request failed (status: ${result.status || 'unknown'}) — check console for details.`);
-            return;
+                showError(result.error || `Request failed (status: ${result.status || 'unknown'})`);
+                return;
             }
 
             const body = result.body;
             if (typeof body === 'string') {
-            try {
-                const parsed = JSON.parse(body);
-                showReport(parsed);
-            } catch (e) {
-                showError('Server returned non-JSON response. Check console for details.');
-                console.log('[analyze] raw body:', body);
-            }
+                try {
+                    const parsed = JSON.parse(body);
+                    showReport(parsed);
+                } catch {
+                    showError('Server returned non-JSON response.');
+                }
             } else {
-            showReport(body);
+                showReport(body);
             }
         });
 
-        console.log('[analyze] debug script loaded — event listener attached');
         })();
     </script>
-
-
 
 </body>
 </html>
