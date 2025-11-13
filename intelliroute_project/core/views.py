@@ -119,7 +119,7 @@ def analyze_feedback(request):
         headers = {"Authorization": f"Bearer {settings.HF_API_TOKEN}"}
         payload = {"inputs": text_input}
 
-        sentiment = requests.post(API_SENTIMENT, headers=headers, json=payload, timeout=20).json()
+        sentiment = requests.post(API_SENTIMENT, headers=headers, json=payload, timeout=10).json()
 
         print('Sentiment',sentiment)
 
