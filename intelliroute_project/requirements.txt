@@ -8,3 +8,4 @@ google-auth
 google-auth-oauthlib
 gunicorn
 whitenoise
+django-cors-headers
