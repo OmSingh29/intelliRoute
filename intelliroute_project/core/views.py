@@ -22,7 +22,7 @@ import google.auth.exceptions
 
 # --- HUGGING FACE API CONFIGURATION ---
 MODEL_SUMMARIZATION = "sshleifer/distilbart-cnn-12-6"
-MODEL_SENTIMENT = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
+MODEL_SENTIMENT = "distilbert-base-uncased-finetuned-sst-2-english"
 MODEL_ZERO_SHOT = "facebook/bart-large-mnli"
 CLASSIFIER_LABELS = ["Urgent", "Billing", "Technical Support", "Bug Report", "Feature Request", "Praise", "General Feedback"]
 # Define the strict priority order for custom sorting
