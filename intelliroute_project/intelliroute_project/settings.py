@@ -23,10 +23,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 HF_API_TOKEN = os.environ.get('HF_API_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-#ALLOWED_HOSTS = ['www.intelliroute.com', 'intelliroute.com']
+#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.intelliroute.com', 'intelliroute.com']
 
 # Application definition
 
@@ -131,3 +131,4 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
