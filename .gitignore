@@ -22,7 +22,6 @@ db.sqlite3
 # Node / Tailwind
 node_modules/
 tailwindcss.exe
-package-lock.json
 
 # OS
 .DS_Store
