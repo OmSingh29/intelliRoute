@@ -171,28 +171,30 @@
 
             summaryOutput.textContent = data.summary || '';
             sentimentOutput.textContent = data.sentiment || '';
-            
+
             // Create colored, soft-shadow chips for tags (matching example buttons UI)
             tagsOutput.innerHTML = '';
 
-            // human-friendly color hexes for clean gradients
+            // human-friendly color hexes for clean gradients / backgrounds
             const colorMap = {
-            "urgent":        {bg:'#FEE2E2', fill:'#EF4444'}, // red
-            "bug":           {bg:'#FFF7ED', fill:'#FB923C'}, // orange
-            "technical":     {bg:'#EFF6FF', fill:'#2563EB'}, // blue
-            "support":       {bg:'#EFF6FF', fill:'#2563EB'}, // blue
-            "feature":       {bg:'#EFF6FF', fill:'#3B82F6'}, // blue
-            "billing":       {bg:'#FFFBEB', fill:'#D97706'}, // yellow/orange
-            "praise":        {bg:'#ECFDF5', fill:'#10B981'}, // green
-            "general":       {bg:'#F3F4F6', fill:'#6B7280'}, // gray
+            "urgent":  {bg:'#FEE2E2', fill:'#EF4444'}, // red
+            "bug":     {bg:'#FFF7ED', fill:'#FB923C'}, // orange
+            "technical": {bg:'#EFF6FF', fill:'#2563EB'}, // blue
+            "support": {bg:'#EFF6FF', fill:'#2563EB'}, // blue
+            "feature": {bg:'#EFF6FF', fill:'#3B82F6'}, // blue
+            "billing": {bg:'#FFFBEB', fill:'#D97706'}, // yellow/orange
+            "praise":  {bg:'#ECFDF5', fill:'#10B981'}, // green
+            "general": {bg:'#F3F4F6', fill:'#6B7280'}  // gray
             };
 
             if (Array.isArray(data.tags)) {
-            // data.tags is a list of objects like {label:'Feature Request', score:0.07}
             data.tags.forEach(obj => {
+                // support two formats:
+                //  - obj is a string: "Bug Report"
+                //  - obj is an object: { label: "Bug Report", score: 0.8 }
                 const rawLabel = (obj && obj.label) ? String(obj.label) : String(obj);
-                const score = (obj && typeof obj.score === 'number') ? obj.score : 0;
-                const pct = Math.round(score * 100); // e.g. 80
+                const score = (obj && typeof obj.score === 'number') ? obj.score : null; // null means "no score"
+                const pct = (typeof score === 'number' && !isNaN(score)) ? Math.round(score * 100) : null;
 
                 const key = rawLabel.toLowerCase();
                 // pick a color by keyword match (robust to small label variations)
@@ -205,35 +207,48 @@
                 else if (key.includes("praise")) pick = colorMap["praise"];
                 else if (key.includes("general")) pick = colorMap["general"];
 
-                // Create the chip: left side filled according to pct, rest uses bg
+                // Create chip element
                 const chip = document.createElement('span');
                 chip.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium';
-                chip.style.background = `linear-gradient(90deg, ${pick.fill} ${pct}%, ${pick.bg} ${pct}%)`;
                 chip.style.border = '1px solid rgba(0,0,0,0.06)';
                 chip.style.boxShadow = '0 1px 2px rgba(0,0,0,0.04)';
+
+                // If we have a meaningful percentage (>0) show a left-fill gradient + percent badge
+                if (pct !== null && pct > 0) {
+                // gradient shows fill color for pct% then bg color
+                chip.style.background = `linear-gradient(90deg, ${pick.fill} ${pct}%, ${pick.bg} ${pct}%)`;
+                // dark text works on these light backgrounds
+                chip.style.color = '#111827';
+                } else {
+                // no score -> show a solid soft background color
+                chip.style.background = pick.bg;
+                chip.style.color = '#111827';
+                }
 
                 // Label text
                 const labelNode = document.createElement('span');
                 labelNode.textContent = rawLabel;
                 labelNode.style.paddingRight = '6px';
-                labelNode.style.color = '#111827'; // dark text for readability
+                labelNode.style.color = '#111827';
 
-                // Small badge showing percentage
+                chip.appendChild(labelNode);
+
+                // Only append percentage badge when pct is defined and > 0
+                if (pct !== null && pct > 0) {
                 const percNode = document.createElement('span');
                 percNode.textContent = `${pct}%`;
                 percNode.style.fontSize = '0.7rem';
                 percNode.style.padding = '2px 6px';
                 percNode.style.borderRadius = '999px';
-                percNode.style.background = 'rgba(255,255,255,0.6)';
+                percNode.style.background = 'rgba(255,255,255,0.7)';
                 percNode.style.color = '#111827';
                 percNode.style.marginLeft = '4px';
-
-                chip.appendChild(labelNode);
                 chip.appendChild(percNode);
+                }
+
                 tagsOutput.appendChild(chip);
             });
             }
-
         }
 
         async function postAnalyze(text, attempts = 3) {
@@ -336,6 +351,7 @@
         console.log('[analyze] debug script loaded — event listener attached');
         })();
     </script>
+
 
 
 </body>
