@@ -107,12 +107,20 @@ def analyze_feedback(request):
             model=MODEL_SUMMARIZATION,
         )
         print('Summary',summary)
-
+        '''
         # 3. Call Sentiment Analysis
         sentiment = client.text_classification(
             text_input,
             model=MODEL_SENTIMENT,
         )
+        '''
+        API_SENTIMENT = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
+
+        headers = {"Authorization": f"Bearer {settings.HF_API_TOKEN}"}
+        payload = {"inputs": text_input}
+
+        sentiment = requests.post(API_SENTIMENT, headers=headers, json=payload, timeout=20).json()
+
         print('Sentiment',sentiment)
 
         # 4. Call Zero-Shot Classification (Manual Requests Call - as per user instruction)
