@@ -23,10 +23,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 HF_API_TOKEN = os.environ.get('HF_API_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-#ALLOWED_HOSTS = ['www.intelliroute.com', 'intelliroute.com']
+#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.intelliroute.com', 'intelliroute.com']
 
 # Application definition
 

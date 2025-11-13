@@ -27,3 +27,6 @@ package-lock.json
 # OS
 .DS_Store
 Thumbs.db
+
+#For deployment
+gunicorn
