@@ -32,8 +32,6 @@ ALLOWED_HOSTS = ['intelliroute.onrender.com', 'www.intelliroute.com', 'intelliro
 #CORS_ALLOWED_ORIGINS = []
 #CORS_ALLOWED_ORIGINS = ["https://intelliroute.onrender.com", "http://127.0.0.1:8000", "http://localhost:8000"]
 
-CORS_ALLOW_ALL_ORIGINS = True
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,11 +42,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'core',
-    #"corsheaders",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
-    #"corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -58,6 +56,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 ROOT_URLCONF = "intelliroute_project.urls"
@@ -141,6 +141,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 
 
