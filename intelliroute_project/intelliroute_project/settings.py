@@ -25,9 +25,9 @@ HF_API_TOKEN = os.environ.get('HF_API_TOKEN')
 #DEBUG = True
 DEBUG = False
 
-ALLOWED_HOSTS = ["intelliroute.onrender.com", "intelliroute-yk3k.onrender.com" "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["intelliroute.onrender.com", "intelliroute-yk3k.onrender.com", "localhost", "127.0.0.1"]
 
-CORS_ALLOWED_ORIGINS = ["https://intelliroute.onrender.com", "https://intelliroute-yk3k.onrender.com" "http://127.0.0.1:8000", "http://localhost:8000"]
+CORS_ALLOWED_ORIGINS = ["https://intelliroute.onrender.com", "https://intelliroute-yk3k.onrender.com", "http://127.0.0.1:8000", "http://localhost:8000"]
 
 # Application definition
 
